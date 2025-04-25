@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉诺塔小游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #4a6fa5;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        
+        .description {
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #666;
+        }
+        
+        .difficulty-selector {
+            margin: 30px 0;
+        }
+        
+        .difficulty-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .difficulty-btn {
+            padding: 10px 15px;
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .difficulty-btn:hover {
+            background-color: #3a5a80;
+            transform: translateY(-2px);
+        }
+        
+        .game-container {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .towers {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            height: 300px;
+            align-items: flex-end;
+        }
+        
+        .tower {
+            width: 30%;
+            height: 250px;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .tower::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 10px;
+            height: 100%;
+            background-color: #8b4513;
+            border-radius: 5px;
+            z-index: 1;
+        }
+        
+        .tower::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 80%;
+            height: 10px;
+            background-color: #8b4513;
+            border-radius: 5px;
+        }
+        
+        .disk {
+            height: 20px;
+            margin: 2px 0;
+            border-radius: 10px;
+            z-index: 2;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f0f4f8;
+            border-radius: 5px;
+        }
+        
+        .moves {
+            font-weight: bold;
+            color: #4a6fa5;
+        }
+        
+        .restart-btn {
+            padding: 8px 15px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .restart-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .win-message {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 5px;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .back-btn {
+            margin-top: 20px;
+            padding: 8px 15px;
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background-color: #6c7a7d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="start-screen">
+            <h1>汉诺塔小游戏</h1>
+            <p class="description">
+                汉诺塔是一个经典的数学难题。游戏规则：将所有圆盘从第一根柱子移动到第三根柱子，
+                每次只能移动一个圆盘，且大盘不能放在小盘上面。
+            </p>
+            
+            <div class="difficulty-selector">
+                <h2>选择难度等级</h2>
+                <p>圆盘数量越多，难度越高</p>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn" data-level="3">简单 (3)</button>
+                    <button class="difficulty-btn" data-level="4">初级 (4)</button>
+                    <button class="difficulty-btn" data-level="5">中级 (5)</button>
+                    <button class="difficulty-btn" data-level="6">中高级 (6)</button>
+                    <button class="difficulty-btn" data-level="7">高级 (7)</button>
+                    <button class="difficulty-btn" data-level="8">困难 (8)</button>
+                    <button class="difficulty-btn" data-level="9">专家 (9)</button>
+                    <button class="difficulty-btn" data-level="10">大师 (10)</button>
+                    <button class="difficulty-btn" data-level="12">宗师 (12)</button>
+                    <button class="difficulty-btn" data-level="15">传奇 (15)</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="game-screen" class="game-container">
+            <h2 id="game-title">汉诺塔 - 难度: <span id="current-level">3</span></h2>
+            <div class="game-info">
+                <div>步数: <span class="moves">0</span></div>
+                <button class="restart-btn">重新开始</button>
+            </div>
+            
+            <div class="towers">
+                <div class="tower" id="tower-1" data-tower="1"></div>
+                <div class="tower" id="tower-2" data-tower="2"></div>
+                <div class="tower" id="tower-3" data-tower="3"></div>
+            </div>
+            
+            <div class="win-message" id="win-message">
+                恭喜你完成了游戏！点击"重新开始"可以再玩一次。
+            </div>
+            
+            <button class="back-btn" id="back-btn">返回主菜单</button>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态
+        let gameState = {
+            disks: 3,
+            moves: 0,
+            selectedTower: null,
+            colors: [
+                '#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#FF33F3',
+                '#33FFF3', '#FF8C33', '#8C33FF', '#33FF8C', '#FF338C',
+                '#8CFF33', '#338CFF', '#FF5733', '#33FF57', '#3357FF'
+            ]
+        };
+
+        // DOM元素
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const gameTitle = document.getElementById('game-title');
+        const currentLevel = document.getElementById('current-level');
+        const movesDisplay = document.querySelector('.moves');
+        const winMessage = document.getElementById('win-message');
+        const backBtn = document.getElementById('back-btn');
+        const restartBtn = document.querySelector('.restart-btn');
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+        const towers = document.querySelectorAll('.tower');
+
+        // 初始化游戏
+        function initGame(disks) {
+            gameState.disks = disks;
+            gameState.moves = 0;
+            gameState.selectedTower = null;
+            
+            currentLevel.textContent = disks;
+            movesDisplay.textContent = '0';
+            winMessage.style.display = 'none';
+            
+            // 清空所有塔
+            towers.forEach(tower => {
+                tower.innerHTML = '';
+            });
+            
+            // 创建圆盘并添加到第一个塔
+            const tower1 = document.getElementById('tower-1');
+            for (let i = disks; i >= 1; i--) {
+                const disk = document.createElement('div');
+                disk.className = 'disk';
+                disk.dataset.size = i;
+                disk.style.width = `${15 + i * 20}px`;
+                disk.style.backgroundColor = gameState.colors[i % gameState.colors.length];
+                disk.textContent = i;
+                tower1.appendChild(disk);
+            }
+            
+            // 显示游戏界面
+            startScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+        }
+
+        // 检查游戏是否胜利
+        function checkWin() {
+            const tower3 = document.getElementById('tower-3');
+            return tower3.children.length === gameState.disks;
+        }
+
+        // 处理塔的点击
+        function handleTowerClick(tower) {
+            const towerId = tower.dataset.tower;
+            const disksInTower = tower.querySelectorAll('.disk');
+            
+            // 如果没有选中任何塔，且当前塔有圆盘，则选中该塔
+            if (gameState.selectedTower === null) {
+                if (disksInTower.length > 0) {
+                    gameState.selectedTower = towerId;
+                    disksInTower[disksInTower.length - 1].style.opacity = '0.7';
+                }
+            } 
+            // 如果已经选中了一个塔
+            else {
+                const selectedTower = document.getElementById(`tower-${gameState.selectedTower}`);
+                const selectedDisks = selectedTower.querySelectorAll('.disk');
+                
+                // 如果点击的是同一个塔，取消选择
+                if (gameState.selectedTower === towerId) {
+                    selectedDisks[selectedDisks.length - 1].style.opacity = '1';
+                    gameState.selectedTower = null;
+                    return;
+                }
+                
+                // 获取选中的圆盘
+                const selectedDisk = selectedDisks[selectedDisks.length - 1];
+                const selectedDiskSize = parseInt(selectedDisk.dataset.size);
+                
+                // 如果目标塔没有圆盘，或者顶部圆盘比选中的圆盘大，则可以移动
+                if (disksInTower.length === 0 || 
+                    parseInt(disksInTower[disksInTower.length - 1].dataset.size) > selectedDiskSize) {
+                    
+                    // 移动圆盘
+                    selectedDisk.style.opacity = '1';
+                    selectedTower.removeChild(selectedDisk);
+                    tower.appendChild(selectedDisk);
+                    
+                    // 增加步数
+                    gameState.moves++;
+                    movesDisplay.textContent = gameState.moves;
+                    
+                    // 检查是否胜利
+                    if (checkWin()) {
+                        winMessage.style.display = 'block';
+                    }
+                } else {
+                    // 非法移动，取消选择
+                    selectedDisks[selectedDisks.length - 1].style.opacity = '1';
+                }
+                
+                gameState.selectedTower = null;
+            }
+        }
+
+        // 事件监听器
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const level = parseInt(btn.dataset.level);
+                initGame(level);
+            });
+        });
+
+        towers.forEach(tower => {
+            tower.addEventListener('click', () => handleTowerClick(tower));
+        });
+
+        restartBtn.addEventListener('click', () => {
+            initGame(gameState.disks);
+        });
+
+        backBtn.addEventListener('click', () => {
+            gameScreen.style.display = 'none';
+            startScreen.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
