@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>汉诺塔小游戏</title>
     <style>
-        * {
+        ▪ {
+
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -81,13 +82,13 @@
             display: flex;
             justify-content: space-around;
             margin: 30px 0;
-            height: 320px; /* 增加高度以适应更多圆盘 */
+            height: 300px;
             align-items: flex-end;
         }
         
         .tower {
             width: 30%;
-            height: 270px; /* 增加高度 */
+            height: 250px;
             display: flex;
             flex-direction: column-reverse;
             align-items: center;
@@ -111,10 +112,9 @@
             position: absolute;
             bottom: 0;
             width: 80%;
-            height: 12px; /* 增加底座厚度 */
+            height: 10px;
             background-color: #8b4513;
             border-radius: 5px;
-            left: 10%; /* 居中 */
         }
         
         .disk {
@@ -130,7 +130,6 @@
             font-weight: bold;
             font-size: 0.8rem;
             text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-            max-width: 80px; /* 限制最大宽度 */
         }
         
         .game-info {
@@ -282,13 +281,8 @@
                 const disk = document.createElement('div');
                 disk.className = 'disk';
                 disk.dataset.size = i;
-                
-                // 计算圆盘宽度，限制最大宽度为80px
-                const minWidth = 30; // 最小宽度（像素）
-                const width = Math.min(80, minWidth + i * 8); // 宽度随圆盘大小增加，但不超过80px
-                
-                disk.style.width = `${width}px`;
-                disk.style.backgroundColor = gameState.colors[(i-1) % gameState.colors.length];
+                disk.style.width = `${15 + i * 20}px`;
+                disk.style.backgroundColor = gameState.colors[i % gameState.colors.length];
                 disk.textContent = i;
                 tower1.appendChild(disk);
             }
