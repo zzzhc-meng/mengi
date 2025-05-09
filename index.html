@@ -81,13 +81,13 @@
             display: flex;
             justify-content: space-around;
             margin: 30px 0;
-            height: 300px;
+            height: 320px; /* 增加高度以适应更多圆盘 */
             align-items: flex-end;
         }
         
         .tower {
             width: 30%;
-            height: 250px;
+            height: 270px; /* 增加高度 */
             display: flex;
             flex-direction: column-reverse;
             align-items: center;
@@ -110,8 +110,8 @@
             content: '';
             position: absolute;
             bottom: 0;
-            width: 80%; /* 柱子底座宽度 */
-            height: 10px;
+            width: 80%;
+            height: 12px; /* 增加底座厚度 */
             background-color: #8b4513;
             border-radius: 5px;
             left: 10%; /* 居中 */
@@ -130,7 +130,7 @@
             font-weight: bold;
             font-size: 0.8rem;
             text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-            max-width: 80px; /* 限制圆盘最大宽度 */
+            max-width: 80px; /* 限制最大宽度 */
         }
         
         .game-info {
@@ -285,10 +285,10 @@
                 
                 // 计算圆盘宽度，限制最大宽度为80px
                 const minWidth = 30; // 最小宽度（像素）
-                const width = Math.min(80, minWidth + i * 10); // 宽度随圆盘大小增加，但不超过80px
+                const width = Math.min(80, minWidth + i * 8); // 宽度随圆盘大小增加，但不超过80px
                 
                 disk.style.width = `${width}px`;
-                disk.style.backgroundColor = gameState.colors[i % gameState.colors.length];
+                disk.style.backgroundColor = gameState.colors[(i-1) % gameState.colors.length];
                 disk.textContent = i;
                 tower1.appendChild(disk);
             }
